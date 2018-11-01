@@ -56,7 +56,7 @@ ArcNode * FirstAdjVex(ALGraph *g, int VerLocation);
 ArcNode * NextAdjVex(ALGraph *g, int VerLocation, ArcNode * adjarc);
 void DFSTraverse(ALGraph *g);
 void DFS(ALGraph *g, int v); 
-void BFSTraverse(ALGraph *g );
+void BFSTraverse(ALGraph *g, LinkQueue *Q);
 int GetVex(ALGraph *g, VertexType v);
 void FindArticul(ALGraph *g);
 void DFSArticul(ALGraph *g , int v);
@@ -227,11 +227,10 @@ void DFS(ALGraph *g, int v){
 
 //广度优先遍历
 
-void BFSTraverse(ALGraph *g){	
+void BFSTraverse(ALGraph *g, LinkQueue *Q){	
 
 	int i;
-	LinkQueue * Q;
-	InitQueue(Q);
+	
 	ElemType v;
 	ArcNode * w;
 	printf("广度遍历的结果：\n");
@@ -393,16 +392,18 @@ int QueueLength(LinkQueue Q){
 int main(int argc, char *argv[]) {
 
 	ALGraph *g;	
+	LinkQueue Q;
+	
 	int vernum, arcnum, i;
 	VertexType ch, an;
 	//VNode * vnode;
 	ArcNode * arc;
 	g = (ALGraph *)malloc(sizeof(ALGraph));	
 	CreateGraph(g);
-	BFSTraverse(g);
+	InitQueue(&Q);
 	
 	FindArticul(g); 
-
+	
 	/*printf("请输入顶点的值：\n");
 	getchar();
 	scanf("%c", &ch);
@@ -448,7 +449,7 @@ int main(int argc, char *argv[]) {
 	
 	}*/
 	
-	
+	BFSTraverse(g, &Q);
 	DFSTraverse(g);
 	
 	

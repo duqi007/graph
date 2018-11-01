@@ -45,6 +45,10 @@ typedef struct{
 
 
 int visited[MAX_VERTEX_NUM];
+int count;
+int low[MAX_VERTEX_NUM];
+
+
 Status CreateUDG(ALGraph *g);
 Status LocateVex(ALGraph *g, int i );
 Status PutVex(ALGraph *g,VertexType ch, VertexType an );
@@ -53,6 +57,9 @@ ArcNode * NextAdjVex(ALGraph *g, int VerLocation, ArcNode * adjarc);
 void DFSTraverse(ALGraph *g);
 void DFS(ALGraph *g, int v); 
 void BFSTraverse(ALGraph *g );
+int GetVex(ALGraph *g, VertexType v);
+void FindArticul(ALGraph *g);
+void DFSArticul(ALGraph *g , int v);
 
 
 int QueueLength(LinkQueue Q);
@@ -127,6 +134,19 @@ Status CreateUDG(ALGraph *g){
 	printf("无向图的构造成功！\n");
 	return OK;
 }
+
+//输入顶点的值求其向量坐标 
+int GetVex(ALGraph *g, VertexType v){
+	
+	int i;
+	for( i = 0 ; i < g->vernum ; i++){
+		if(g->vertices[i].data == v){
+			return i;
+		}
+	}
+	
+	return ERROR;
+} 
 
 //输出某一个特定位置i顶点的值
 Status LocateVex(ALGraph *g, int i ){
@@ -207,8 +227,8 @@ void DFS(ALGraph *g, int v){
 
 //广度优先遍历
 
-void BFSTraverse(ALGraph *g){
-	
+void BFSTraverse(ALGraph *g){	
+
 	int i;
 	LinkQueue * Q;
 	InitQueue(Q);
@@ -220,7 +240,7 @@ void BFSTraverse(ALGraph *g){
 	}
 	for( i = 0; i < g->vernum ; i++){
 		if(visited[i] == 0){
-			visited[i] =1;
+			visited[i] = 1;
 			printf("%c  ", g->vertices[i].data);
 			EnQueue(Q, i);
 			while(QueueEmpty(Q) == 1){
@@ -235,8 +255,64 @@ void BFSTraverse(ALGraph *g){
 			}
 		}
 	}
+	printf("\n");
 } 
 
+
+//连通图G以邻接表存储，查找并输出所有关节点，全局count对访问计数
+
+void FindArticul(ALGraph *g){
+	
+	count = 1;
+	visited[0] = 1;											//假设邻接表上的0号顶点为生成树的根 
+	int i, v;
+	ArcNode * p;
+	for(i = 1 ; i < g->vernum ; i++){
+		visited[i] = 0;											//初始化顶点，全部为0 
+	}	
+	p = g->vertices[0].firstarc;
+	v = p->adjvex;
+	DFSArticul(g , v);
+	if(count < g->vernum){									  //生成树的根至少两个子树 
+		printf("关节点：%c\n", g->vertices[0].data);			//输出根节点 
+		while(p->nextarc){
+			p = p->nextarc;
+			v = p->adjvex;
+			if(visited[v] == 0){
+				DFSArticul(g, v);
+			}
+		}//while 
+	}//if 
+	
+} 
+
+//从第0个点出发深度优先遍历图g， 查找并输出关节点。
+void DFSArticul(ALGraph *g , int v){
+	
+	int min, w;
+	ArcNode * p;
+	visited[v] = min = ++count;          //v是第count个访问的节点
+	for( p = g->vertices[v].firstarc; p != NULL ; p = p->nextarc ){					//对v的每个邻接顶点检查 
+		w = p->adjvex;
+		if(visited[w] == 0){							//w为v的邻接点 
+			DFSArticul(g, w);							//返回前求出low[w] 
+			if(low[w] < min){
+				min = low[w];
+			}
+			if(low[w] >= visited[v]){
+				printf("关节点：%c\n", g->vertices[v].data);
+			}
+		}
+		else{
+			if(visited[w] < min ){
+				min = visited[w]; 
+			}
+			
+		}
+		low[v] = min ;
+	} 
+	
+} 
 
 Status InitQueue(LinkQueue *Q){
 
@@ -323,7 +399,17 @@ int main(int argc, char *argv[]) {
 	ArcNode * arc;
 	g = (ALGraph *)malloc(sizeof(ALGraph));	
 	CreateGraph(g);
-	/*printf("请输入想要查询的顶点的位置：\n");
+	BFSTraverse(g);
+	
+	FindArticul(g); 
+
+	/*printf("请输入顶点的值：\n");
+	getchar();
+	scanf("%c", &ch);
+	printf("顶点的向量值是：%d\n", GetVex(g, ch));
+	
+	
+	printf("请输入想要查询的顶点的位置：\n");
 	scanf("%d", &i);
 	LocateVex(g, i); 
 	printf("请输入想要修改的顶点的原始值：\n");
@@ -361,9 +447,11 @@ int main(int argc, char *argv[]) {
 	}
 	
 	}*/
-	BFSTraverse(g);
-	printf("\n");
+	
+	
 	DFSTraverse(g);
+	
+	
 	
 	return 0;
 }

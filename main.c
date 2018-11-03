@@ -8,6 +8,7 @@ int main(int argc, char *argv[]) {
 	ALGraph *g;	
 	LinkQueue Q;
 	sqStack S;
+	sqStack T;
 	
 	int vernum, arcnum, i;
 	VertexType ch, an;
@@ -17,11 +18,25 @@ int main(int argc, char *argv[]) {
 	CreateGraph(g);
 	InitQueue(&Q);
 	InitStack(&S);
+	InitStack(&T);
+	if(g->kind == DG){
+		
+		TopologicalSort(g, &S);
+	}
+	if(g->kind == DN){
+		//TopologicalOrder(g, &S, &T);
+		CriticalPath(g, &S, &T);
+	}
+	if(g->kind == UDG){
+		FindArticul(g); 
+		BFSTraverse(g, &Q);
+		DFSTraverse(g);
+	}
+	if(g->kind == UDN){
+		printf("UDN\n");
+	}
+		
 	
-	TopologicalSort(g, &S);
-	
-	
-	//FindArticul(g); 
 	
 	/*printf("请输入顶点的值：\n");
 	getchar();
@@ -68,8 +83,7 @@ int main(int argc, char *argv[]) {
 	
 	}*/
 	
-	//BFSTraverse(g, &Q);
-	//DFSTraverse(g);
+
 	
 	
 	

@@ -16,13 +16,13 @@ Status CreateGraph(ALGraph *g){
 			CreateDG(g);
 			break;
 		case 1:
-			printf("DN");
+			CreateDN(g);
 			break;
 		case 2:
 			CreateUDG(g);
 			break;
 		case 3:
-			printf("UDN");
+			CreateUDN(g);
 			break;
 		default:
 			return ERROR;
@@ -45,24 +45,70 @@ Status CreateDG(ALGraph *g)						// ´´½¨ÓĞÏòÍ¼
 		scanf("%c", &ver->data); 
 		
 		printf("µÚ%d¸ö¶¥µãÎª£º%c\n", i, ver->data);
+		
 		ver->firstarc = NULL;
 		g->vertices[i] = (*ver);
 	}
 	printf("ÇëÊäÈë»¡µÄĞÅÏ¢£¡£¨»¡Í·ºÍ»¡Î²ÔÚÍ¼ÖĞµÄ×ø±ê£¬²¢ÓÃ¿Õ¸ñ¸ô¿ª£¡Ò»´ÎÊäÈëÒ»¸ö»¡£©\n");
 	for(i =0 ; i < g->arcnum ; i++){									//³õÊ¼»¯±ß£¬¹¹ÔìÍ¼ 
-		ArcNode * arcs = (ArcNode *)malloc(sizeof(ArcNode));
-		ArcNode * arce = (ArcNode *)malloc(sizeof(ArcNode));
+		
+		ArcNode * arc = (ArcNode *)malloc(sizeof(ArcNode));
 		getchar();
 		scanf("%d%d", &start, &end); 
-		arce->adjvex = end ;
-		arce->nextarc = g->vertices[start].firstarc;
-		g->vertices[start].firstarc = arce;
+		arc->adjvex = end ;
+		arc->info = NULL; 
+		arc->nextarc = g->vertices[start].firstarc;
+		g->vertices[start].firstarc = arc;
 		printf("ÕâÌõ±ßÊÇ¶¥µã%cÖ¸Ïò¶¥µã%cµÄ±ß\n", g->vertices[start].data, g->vertices[end].data);
 	}
 	printf("ÓĞÏòÍ¼µÄ¹¹Ôì³É¹¦£¡\n");
 	return OK;
 } 
-  
+
+Status CreateDN(ALGraph *g)						// ´´½¨ÓĞÏòÍ¼ 
+{
+	
+	int i;
+	int start , end ;
+	
+	g->kind = DN;
+	printf("ÇëÊäÈëÓĞÏòÍ¼µÄ¶¥µãÊıºÍ±ßÊı£¡\n");
+	scanf("%d%d", &g->vernum, &g->arcnum );
+	printf("ÇëÊäÈë¶¥µãµÄĞÅÏ¢£¡\n");
+	for( i = 0; i < g->vernum ; i++){							//³õÊ¼»¯Í¼µÄ¶¥µã 
+		VNode *ver = (VNode *)malloc(sizeof(VNode));
+		getchar(); 
+		scanf("%c", &ver->data); 
+		
+		printf("µÚ%d¸ö¶¥µãÎª£º%c\n", i, ver->data);
+		
+		ver->firstarc = NULL;
+		g->vertices[i] = (*ver);
+	}
+	printf("ÇëÊäÈë»¡µÄĞÅÏ¢£¡£¨»¡Í·ºÍ»¡Î²ÒÔ¼°È¨ÖµÔÚÍ¼ÖĞµÄ×ø±ê£¬²¢ÓÃ¿Õ¸ñ¸ô¿ª£¡Ò»´ÎÊäÈëÒ»¸ö»¡£©\n");
+	
+	for(i =0 ; i < g->arcnum ; i++){									//³õÊ¼»¯±ß£¬¹¹ÔìÍ¼ 
+		
+		ArcNode * arc = (ArcNode *)malloc(sizeof(ArcNode));
+		getchar();
+		scanf("%d%d%d", &start, &end, &info[i]); 
+		 
+		arc->adjvex = end ;
+		arc->info = &info[i] ;
+		arc->nextarc = g->vertices[start].firstarc;
+		g->vertices[start].firstarc = arc;
+		
+	//	printf("ÕâÌõ±ßÊÇ¶¥µã%cÖ¸Ïò¶¥µã%cµÄ±ßÈ¨ÖµÎª£º%d\n", g->vertices[start].data, g->vertices[end].data, *(g->vertices[start].firstarc->info));
+	}
+	for(i =0 ; i < g->arcnum ; i++){
+		ArcNode *p = NULL;
+		for(p = g->vertices[i].firstarc; p != NULL ; p = p->nextarc ){
+			printf("ÕâÌõ±ßÊÇ¶¥µã%cÖ¸Ïò¶¥µã%cµÄ±ßÈ¨ÖµÎª£º%d\n", g->vertices[i].data , g->vertices[p->adjvex].data , *(p->info) );
+		}	
+	}
+	printf("ÓĞÏòÍøµÄ¹¹Ôì³É¹¦£¡\n");
+	return OK;
+} 
 
 Status CreateUDG(ALGraph *g){					// ´´½¨ÎŞÏòÍ¼ 
 	int i;
@@ -89,10 +135,12 @@ Status CreateUDG(ALGraph *g){					// ´´½¨ÎŞÏòÍ¼
 		getchar();
 		scanf("%d%d", &start, &end); 
 		arce->adjvex = end ;
+		arce->info = NULL; 
 		arce->nextarc = g->vertices[start].firstarc;
 		g->vertices[start].firstarc = arce;
 		
 		arcs->adjvex = start;
+		arcs->info = NULL; 
 		arcs->nextarc = g->vertices[end].firstarc;
 		g->vertices[end].firstarc = arcs;
 		printf("ÕâÌõ±ß¹ØÁª¶¥µã%cºÍ%c\n", g->vertices[start].data, g->vertices[end].data);
@@ -101,6 +149,47 @@ Status CreateUDG(ALGraph *g){					// ´´½¨ÎŞÏòÍ¼
 	return OK;
 }
 
+
+Status CreateUDN(ALGraph *g){					// ´´½¨ÎŞÏòÍ¼ 
+	int i;
+	int start , end ;
+	
+	g->kind = UDN;
+	printf("ÇëÊäÈëÎŞÏòÍ¼µÄ¶¥µãÊıºÍ±ßÊı£¡\n");
+	scanf("%d%d", &g->vernum, &g->arcnum );
+	printf("%d  %d\n", g->vernum, g->arcnum);
+	printf("ÇëÊäÈë¶¥µãµÄĞÅÏ¢£¡\n");
+	for( i = 0; i < g->vernum ; i++){						//³õÊ¼»¯Í¼µÄ¶¥µã 
+		VNode *ver = (VNode *)malloc(sizeof(VNode));
+		getchar(); 
+		scanf("%c", &ver->data); 
+		
+		printf("µÚ%d¸ö¶¥µãÎª£º%c\n", i, ver->data);
+		ver->firstarc = NULL;
+		g->vertices[i] = (*ver);
+		
+	}
+	printf("ÇëÊäÈë»¡µÄĞÅÏ¢£¡£¨»¡Í·ºÍ»¡Î²ÔÚÍ¼ÖĞµÄ×ø±ê£¬²¢ÓÃ¿Õ¸ñ¸ô¿ª£¡Ò»´ÎÊäÈëÒ»¸ö»¡£©\n");
+	for(i =0 ; i < g->arcnum ; i++){									//³õÊ¼»¯±ß£¬¹¹ÔìÍ¼ 
+		ArcNode * arcs = (ArcNode *)malloc(sizeof(ArcNode));
+		ArcNode * arce = (ArcNode *)malloc(sizeof(ArcNode));
+		getchar();
+		scanf("%d%d%d", &start, &end, &info); 
+		arce->adjvex = end ;
+		arce->info = &info[i]; 
+		arce->nextarc = g->vertices[start].firstarc;
+		g->vertices[start].firstarc = arce;
+		
+		arcs->adjvex = start;
+		arcs->info = &info[i]; 
+		arcs->nextarc = g->vertices[end].firstarc;
+		g->vertices[end].firstarc = arcs;
+		printf("ÕâÌõ±ß¹ØÁª¶¥µã%cºÍ%cÈ¨ÖµÎª£º%d\n", g->vertices[start].data, g->vertices[end].data, *(g->vertices[start].firstarc->info));
+	}
+
+	printf("ÎŞÏòÍøµÄ¹¹Ôì³É¹¦£¡\n");
+	return OK;
+}
 //ÊäÈë¶¥µãµÄÖµÇóÆäÏòÁ¿×ø±ê 
 int GetVex(ALGraph *g, VertexType v){
 	
@@ -330,3 +419,88 @@ void FindInDegree(ALGraph *g, int InDegree[MAX_VERTEX_NUM])										//Çó¸ö¶¥µãµ
 	} 
 
 } // FindInDegree
+
+
+//ÓĞÏòÍøg²ÉÓÃÁÚ½Ó±í´æ´¢µÄ½á¹¹£¬Çó¸÷¸ö¶¥µãÊÂ¼şµÄ×îÔç·¢ÉúÊ±¼äve(È«¾Ö±äÁ¿)
+// TÎªÍØÆËĞòÁĞ¶¥µãÕ»£¬SÎªÁãÈë¶È¶¥µãÕ»
+//ÈôgÎŞ»ØÂ·£¬ÔòT·µ»ØgµÄÒ»¸öÍØÆËĞòÁĞ£¬ÇÒº¯ÊıÖµÎªOK£¬·ñÔòÎªERROR 
+Status TopologicalOrder(ALGraph *g, sqStack *S, sqStack *T){
+	
+	int i , OutputVex, k;
+	ArcNode *p;
+
+	FindInDegree(g, indegree); 
+	for(i = 0; i < g->vernum ; i++){
+		ve[i] = 0;									//³õÊ¼»¯ve[]; 
+		if(indegree[i] == 0){						//½¨ÁãÈë¶È¶¥µãÕ»S 
+			Push(S, i);								
+		} 
+		//printf("¶¥µã%cµÄÈë¶ÈÊÇ£º%d \n", g->vertices[i].data , indegree[i] );
+	}
+	OutputVex = 0;
+	while(StackEmpty((*S)) == 1){								//Õ»²»Îª¿ÕÑ­»· 
+		Pop(S, &i); 
+		Push(T, i);
+		++OutputVex;
+		for(p = g->vertices[i].firstarc; p != NULL ; p = p->nextarc ){
+			k = p->adjvex;
+			if((--indegree[k]) == 0 ){
+				Push(S , k);
+			}
+			
+			if(ve[i] + *(p->info) > ve[k] ){
+				ve[k] = ve[i] + *(p->info); 
+			}
+		}//for    *(p->info) = dut(<i, k>)
+	}//while 
+/*	for(i = 0; i < g->vernum ; i++){
+		printf("%d \n", ve[i]);							//³õÊ¼»¯ve[]; 
+	}*/
+	if(OutputVex < g->vernum){
+		return ERROR;
+	}
+	else{
+		return OK;
+	}
+} // TopologicalOrder
+
+//Êä³ögµÄ¸÷Ïî¹Ø¼ü»î¶¯ 
+Status CriticalPath(ALGraph *g , sqStack *S, sqStack *T){
+	
+	int i, k;
+	ArcNode *p;
+	InfoType dut;
+
+	if(TopologicalOrder(g, S, T ) == 0)
+		return ERROR; 
+	
+	for(i = 0; i < g->vernum ; i++){
+		vl[i] = ve[ g->vernum - 1 ] ;								//³õÊ¼»¯vl[]; 
+	}	
+	while(StackEmpty((*T)) == 1){
+		Pop(T, &i); 
+		for( p = g->vertices[i].firstarc; p != NULL ; p = p->nextarc ){
+			k = p->adjvex;
+			dut = *(p->info);						//dut<i, k>
+			if(vl[k] - dut < vl[i]){
+				vl[i] = vl[k] - dut;
+			}
+		}//for
+	}
+	int ee,el;
+	for(i = 0; i < g->vernum ;  i++ ){
+		for(p = g->vertices[i].firstarc ;  p != NULL ; p = p->nextarc){
+			k = p->adjvex;
+			dut = *(p->info);
+			ee = ve[i]; 
+			el = vl[k] - dut;
+			
+			if(ee == el){
+				printf("%c-----%c = %d\n", g->vertices[i].data, g->vertices[k].data, dut);
+			}
+			
+		}
+	}
+	 
+	return OK;
+}

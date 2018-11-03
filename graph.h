@@ -1,6 +1,7 @@
 
 
 #define MAX_VERTEX_NUM		20
+#define MAX_ARC_NUM		20
 #define OK					1
 #define ERROR				0
 #define STACK_INIT_SIZE 	20
@@ -12,7 +13,7 @@ typedef int 				Status;
 typedef int 				ElemType;
 typedef int 				SElemType;
 typedef int 				Status;
-
+typedef int    				InfoType;
 //------------Á´Ê½¶ÓÁĞµÄ´æ´¢½á¹¹------------------------// 
 typedef struct QNode{
     ElemType data;
@@ -36,6 +37,7 @@ typedef struct{
 typedef struct ArcNode{
 	int adjvex;							//¸Ã»¡ËùÖ¸ÏòµÄ¶¥µãĞÅÏ¢ 
 	struct ArcNode * nextarc;			//Ö¸ÏòÏÅÒ»Ìø»¡µÄÖ¸Õë  
+	InfoType * info;					//¸Ã»¡µÄÏà¹ØĞÅÏ¢µÄÖ¸Õë£¬±ÈÈçÈ¨Öµ£» 
 }ArcNode;
 
 //¶¥µãµÄ½á¹¹Ìå 
@@ -57,6 +59,9 @@ int visited[MAX_VERTEX_NUM];
 int count;
 int low[MAX_VERTEX_NUM];
 int indegree[MAX_VERTEX_NUM];
+int ve[MAX_VERTEX_NUM];
+int vl[MAX_VERTEX_NUM];
+InfoType info[MAX_ARC_NUM];
 
 
 int QueueLength(LinkQueue Q);						//¶ÓÁĞµÄ³¤¶È£¬ÔªËØ¸öÊı 
@@ -80,6 +85,8 @@ Status StackTraverse(sqStack S);                    //±éÀúÕ»ÔªËØÏÔÊ¾³öÀ´
 Status CreateGraph(ALGraph *g);
 Status CreateUDG(ALGraph *g);											//´´½¨ÎŞÏòÍ¼ 
 Status CreateDG(ALGraph *g);											//´´½¨ÓĞÏòÍ¼ 
+Status CreateDN(ALGraph *g)	;											//´´½¨ÓĞÏòÍø
+Status CreateUDN(ALGraph *g);											//´´½¨ÎŞÏòÍø 
 Status LocateVex(ALGraph *g, int i );									//Êä³öÄ³Ò»¸öÌØ¶¨Î»ÖÃi¶¥µãµÄÖµ 
 Status PutVex(ALGraph *g,VertexType ch, VertexType an );				//¶ÔÍ¼ÖĞÄ³Ò»¸ö¶¥µã½øĞĞ¸³Öµ,½«¶¥µãÖµÎªchµÄ¶¥µã±ä³Éan 
 ArcNode * FirstAdjVex(ALGraph *g, int VerLocation);						//»ñÈ¡¶¥µãµÄµÚÒ»¸öÁ¬½ÓµÄ±ß 
@@ -92,3 +99,5 @@ void FindArticul(ALGraph *g);											//Á¬Í¨Í¼GÒÔÁÚ½Ó±í´æ´¢£¬²éÕÒ²¢Êä³öËùÓĞ¹Ø½
 void DFSArticul(ALGraph *g , int v);									//´ÓµÚ0¸öµã³ö·¢Éî¶ÈÓÅÏÈ±éÀúÍ¼g£¬ ²éÕÒ²¢Êä³ö¹Ø½Úµã¡£
 Status TopologicalSort(ALGraph *g, sqStack *S);							//ÓĞÏòÎŞ»·Í¼gµÄÍØÆËÅÅĞò 
 void FindInDegree(ALGraph *g, int indegree[MAX_VERTEX_NUM]);			//ÇóÍ¼g¸÷¶¥µãµÄÈë¶È 
+Status TopologicalOrder(ALGraph *g, sqStack *S, sqStack *T);
+Status CriticalPath(ALGraph *g , sqStack *S, sqStack *T);
